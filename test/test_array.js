@@ -1,5 +1,6 @@
 const _ = require('../src/array.js');
 const expect = require('chai').expect;
+
 describe('Array chunk', () => {
     it('should throw type error', () => {
         let fn = () => _.chunk(1);
