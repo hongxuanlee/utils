@@ -89,22 +89,171 @@ describe('Array find index', () => {
             'user': 'pebbles',
             'active': true
         }];
-
-        // let res1 = _.findIndex(users, function(o) {
-        //     return o.user == 'barney';
-        // });
-        // expect(res1).to.equal(0);
-        // let res2 = _.findIndex(users, {
-        //     'user': 'fred',
-        //     'active': false
-        // });
-        // expect(res2).to.equal(1);
-        // let res3 = _.findIndex(users, ['active', false]);
-        // expect(res3).to.equal(0)
+        let res1 = _.findIndex(users, function(o) {
+            return o.user == 'barney';
+        });
+        expect(res1).to.equal(0);
+        let res2 = _.findIndex(users, {
+            'user': 'fred',
+            'active': false
+        });
+        expect(res2).to.equal(1);
+        let res3 = _.findIndex(users, ['active', false]);
+        expect(res3).to.equal(0)
         let res4 = _.findIndex(users, 'active');
         expect(res4).to.equal(2)
     })
 })
+
+describe('Array flatten', () => {
+    it('should throw type error', () => {
+        let fn = () => _.flatten();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should flatten array', () => {
+        expect(_.flatten([1, [2, [3, [4]], 5]])).to.deep.equal([1, 2, [3, [4]], 5]);
+    });
+});
+
+describe('Array flatten deep', () => {
+    it('should throw type error', () => {
+        let fn = () => _.flattenDeep();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should flatten array', () => {
+        expect(_.flattenDeep([1, [2, [3, [4]], 5]])).to.deep.equal([1, 2, 3, 4, 5]);
+    });
+});
+
+describe('Array flatten depth', () => {
+    it('should throw type error', () => {
+        let fn = () => _.flattenDepth();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should flatten array', () => {
+        expect(_.flattenDepth([1, [2, [3, [4]], 5]], 1)).to.deep.equal([1, 2, [3, [4]], 5]);
+        expect(_.flattenDepth([1, [2, [3, [4]], 5]], 2)).to.deep.equal([1, 2, 3, [4], 5]);
+    });
+});
+
+describe('Array intersection', () => {
+    it('should throw type error', () => {
+        let fn = () => _.intersection([1,2],3);
+        expect(fn).to.throw(TypeError);
+    });
+    it('should intersection array', () => {
+        expect(_.intersection([2, 1], [2, 3])).to.deep.equal([2]);
+        expect(_.intersection([2, 1], [2, 1, 9], [2, 1, 3, 4])).to.deep.equal([2, 1]);
+    });
+});
+
+describe('Array intersectionBy', () => {
+    it('should throw type error', () => {
+        let fn = () => _.intersectionBy([1,2],[1,2,3]);
+        expect(fn).to.throw(TypeError);
+    });
+    it('should intersection arrayBy', () => {
+        expect(_.intersectionBy([2.1, 1.2], [2.3, 3.4], Math.floor)).to.deep.equal([2.1]);
+        expect(_.intersectionBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x')).to.deep.equal([{ 'x': 1 }]);
+    });
+});
+
+describe('Array pull', () => {
+    it('should throw type error', () => {
+        let fn = () => _.pull();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should pull array', () => {
+        let array = ['a', 'b', 'c', 'a', 'b', 'c'];
+        _.pull(array, 'a', 'c');
+        expect(array).to.deep.equal(['b', 'b']);
+    });
+});
+
+describe('Array pull All', () => {
+    it('should throw type error', () => {
+        let fn = () => _.pullAll();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should pull array', () => {
+        let array = ['a', 'b', 'c', 'a', 'b', 'c'];
+        _.pullAll(array, ['a', 'c']);
+        expect(array).to.deep.equal(['b', 'b']);
+    });
+});
+
+describe('Array pull All By', () => {
+    it('should throw type error', () => {
+        let fn = () => _.pullAllBy();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should pull array', () => {
+        var array = [{ 'x': 1 }, { 'x': 2 }, { 'x': 3 }, { 'x': 1 }];
+        _.pullAllBy(array, [{ 'x': 1 }, { 'x': 3 }], 'x');
+        expect(array).to.deep.equal([{ 'x': 2 }]);
+    });
+});
+
+describe('Array remove', () => {
+    it('should throw type error', () => {
+        let fn = () => _.remove();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should array remove', () => {
+        let array = [1, 2, 3, 4];
+        let evens = _.remove(array, function(n) {
+          return n % 2 == 0;
+        });
+        expect(array).to.deep.equal([1, 3]);
+        expect(evens).to.deep.equal([2, 4]);
+    });
+});
+
+describe('Array reverse', () => {
+    it('should throw type error', () => {
+        let fn = () => _.reverse();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should array reverse', () => {
+        let array = [1, 2, 3];
+        _.reverse(array);
+        expect(array).to.deep.equal([3, 2, 1]);
+        let array1 = [1, 2, 3, 4];
+        _.reverse(array1);
+        expect(array1).to.deep.equal([4, 3, 2, 1]);
+    });
+});
+
+describe('Array union', () => {
+    it('should throw type error', () => {
+        let fn = () => _.union([1,2],1);
+        expect(fn).to.throw(TypeError);
+    });
+    it('should array union', () => {
+        expect(_.union([2], [1, 2])).to.deep.equal([2, 1]);
+    });
+});
+
+describe('Array uniq', () => {
+    it('should throw type error', () => {
+        let fn = () => _.uniq();
+        expect(fn).to.throw(TypeError);
+    });
+    it('should array uniq', () => {
+        expect(_.uniq([2, 1, 2])).to.deep.equal([2, 1]);
+    });
+});
+
+describe('Array zip', () => {
+    it('should throw type error', () => {
+        let fn = () => _.zip([1,2], 1);
+        expect(fn).to.throw(TypeError);
+    });
+    it('should array uniq', () => {
+        expect(_.zip(['a', 'b'], [1, 2], [true, false])).to.deep.equal([['a', 1, true], ['b', 2, false]] );
+    });
+});
+
 
 
 
