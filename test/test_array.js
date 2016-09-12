@@ -29,7 +29,7 @@ describe('Array compact', () => {
 
 describe('Array difference/differenceBy', () => {
     it('should throw type error', () => {
-        let fn = () => _.compact(1);
+        let fn = () => _.difference(1);
         expect(fn).to.throw(TypeError);
     });
     it('should difference arr', () => {

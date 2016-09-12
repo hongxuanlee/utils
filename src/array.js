@@ -3,7 +3,9 @@
 const _ = {};
 module.exports = _;
 
-_.iteratee = n => n;
+_.eq = (value, other) => value === other || (value !== value && other !== other);
+
+_.identity = n => n;
 
 _.isString = str => typeof str === 'string';
 
@@ -44,7 +46,7 @@ _.difference = (arr, values) => {
     return arr.filter(item => values.indexOf(item) === -1);
 };
 
-_.differenceBy = (arr, values, iteratee = _.iteratee) => {
+_.differenceBy = (arr, values, iteratee = _.identity) => {
     if (!arr || !_.isArray(arr)) {
         throw new TypeError(arr + ' is not Array');
     }
@@ -133,9 +135,11 @@ _.findIndex = (arr, predicate = _.iteratee, fromIndex = 0) => {
         }
         return true
     }
-    for (let i = fromIndex; i < arr.length; i++) {
-        if (fn(arr[i])) {
-            return i;
+    let len = arr.length;
+    fromIndex = fromIndex - 1;
+    while (++fromIndex < len) {
+        if (fn(arr[fromIndex])) {
+            return fromIndex;
         }
     }
     return -1;
@@ -144,13 +148,13 @@ _.findIndex = (arr, predicate = _.iteratee, fromIndex = 0) => {
 _.flatten = (arr) => {
     if (!arr || !_.isArray(arr)) {
         throw new TypeError(arr + ' is not Array');
-    } 
+    }
     let array = [];
-    for(let i = 0, len = arr.length; i < len; i++){
-        if(_.isArray(arr[i])){
+    for (let i = 0, len = arr.length; i < len; i++) {
+        if (_.isArray(arr[i])) {
             let args = arr[i];
             array.push.apply(array, args);
-        }else{
+        } else {
             array.push(arr[i]);
         }
     }
@@ -160,12 +164,12 @@ _.flatten = (arr) => {
 _.flattenDeep = (arr) => {
     if (!arr || !_.isArray(arr)) {
         throw new TypeError(arr + ' is not Array');
-    } 
+    }
     let array = [];
     let deepEqual = (l, r) => JSON.stringify(l) === JSON.stringify(r);
     let preArr = arr;
     let newArr = _.flatten(arr);
-    while(!deepEqual(preArr, newArr)){
+    while (!deepEqual(preArr, newArr)) {
         preArr = newArr;
         newArr = _.flatten(newArr);
     }
@@ -174,10 +178,10 @@ _.flattenDeep = (arr) => {
 
 _.flattenDepth = (arr, depth = 1) => {
     if (!arr || !_.isArray(arr)) {
-       throw new TypeError(arr + ' is not Array');
-    } 
+        throw new TypeError(arr + ' is not Array');
+    }
     let newArr = arr;
-    while(depth--){
+    while (depth--) {
         newArr = _.flatten(newArr);
     }
     return newArr;
@@ -186,13 +190,13 @@ _.flattenDepth = (arr, depth = 1) => {
 _.intersection = (...args) => {
     return args.reduce((pre, cur) => {
         if (!_.isArray(pre)) {
-          throw new TypeError(pre + ' is not Array');
-        } 
-        if (!_.isArray(cur)) {
-          throw new TypeError(cur + ' is not Array');
+            throw new TypeError(pre + ' is not Array');
         }
-        return pre.filter(ele => cur.indexOf(ele) > -1);   
-    }); 
+        if (!_.isArray(cur)) {
+            throw new TypeError(cur + ' is not Array');
+        }
+        return pre.filter(ele => cur.indexOf(ele) > -1);
+    });
 };
 
 _.intersectionBy = (...args) => {
@@ -202,88 +206,88 @@ _.intersectionBy = (...args) => {
     }
     return args.reduce((pre, cur) => {
         if (!_.isArray(pre)) {
-          throw new TypeError(pre + ' is not Array');
-        } 
+            throw new TypeError(pre + ' is not Array');
+        }
         if (!_.isArray(cur)) {
-          throw new TypeError(cur + ' is not Array');
+            throw new TypeError(cur + ' is not Array');
         }
         return pre.filter(ele => {
             for (let i = 0; i < cur.length; i++) {
                 if (_.isFunction(comparator)) {
-                    if(comparator(ele) === comparator(cur[i])){
+                    if (comparator(ele) === comparator(cur[i])) {
                         return true
                     }
                 } else if (_.isString(comparator)) {
-                    if(ele[comparator] === cur[i][comparator]){
+                    if (ele[comparator] === cur[i][comparator]) {
                         return true
                     }
                 }
             }
             return false;
-        });   
-    }); 
+        });
+    });
 };
 
 _.pull = (...args) => {
     let arr = args.shift();
     if (!_.isArray(arr)) {
-       throw new TypeError(arr + ' is not Array');
-    } 
-    if(!args.length){
+        throw new TypeError(arr + ' is not Array');
+    }
+    if (!args.length) {
         return arr;
     }
     args.forEach(n => {
-       for(let i = 0; i < arr.length; i++){
-          if (arr[i] === n){
-             arr.splice(i, 1);
-          }
-       }
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i] === n) {
+                arr.splice(i, 1);
+            }
+        }
     });
     return arr;
 };
 
 _.pullAll = (arr, values) => {
-    if (!_.isArray(arr)){
-       throw new TypeError(arr + ' is not Array');
-    } 
-    if(!values || !values.length){
+    if (!_.isArray(arr)) {
+        throw new TypeError(arr + ' is not Array');
+    }
+    if (!values || !values.length) {
         return arr;
     }
     values.forEach(n => {
-       for(let i = 0; i < arr.length; ){
-          if (arr[i] === n){
-             arr.splice(i, 1);
-          }else{
-             i++;
-          }
-       }
+        for (let i = 0; i < arr.length;) {
+            if (arr[i] === n) {
+                arr.splice(i, 1);
+            } else {
+                i++;
+            }
+        }
     });
     return arr;
 };
 
-_.pullAllBy = (arr, values, iteratee = _.iteratee) => {
-    if (!_.isArray(arr)){
-       throw new TypeError(arr + ' is not Array');
-    } 
-    if(!values || !values.length){
+_.pullAllBy = (arr, values, iteratee = _.identity) => {
+    if (!_.isArray(arr)) {
+        throw new TypeError(arr + ' is not Array');
+    }
+    if (!values || !values.length) {
         return arr;
     }
     values.forEach(n => {
-       for(let i = 0; i < arr.length;){
-          if(_.isFunction(iteratee)){
-              if (iteratee(arr[i]) === iteratee(n)){
-                 arr.splice(i, 1);
-              }else{
-                 i++;
-              }
-          }else{
-              if (arr[i][iteratee] === n[iteratee]){
-                 arr.splice(i, 1);
-              }else{
-                 i++;
-              }
-          }
-       }
+        for (let i = 0; i < arr.length;) {
+            if (_.isFunction(iteratee)) {
+                if (iteratee(arr[i]) === iteratee(n)) {
+                    arr.splice(i, 1);
+                } else {
+                    i++;
+                }
+            } else {
+                if (arr[i][iteratee] === n[iteratee]) {
+                    arr.splice(i, 1);
+                } else {
+                    i++;
+                }
+            }
+        }
     });
     return arr;
 };
@@ -293,11 +297,11 @@ _.remove = (arr, predicate = _.identity) => {
         throw new TypeError(arr + ' is not Array');
     }
     let removed = [];
-    for(let i = 0; i < arr.length;){
-        if(predicate(arr[i])){
+    for (let i = 0; i < arr.length;) {
+        if (predicate(arr[i])) {
             removed.push(arr[i]);
             arr.splice(i, 1);
-        }else{
+        } else {
             i++;
         }
     }
@@ -310,7 +314,7 @@ _.reverse = (arr) => {
     }
     let len = arr.length;
     let tmp;
-    for(let i = 0; i < len/2; i++){
+    for (let i = 0; i < len / 2; i++) {
         tmp = arr[len - 1 - i];
         arr[len - 1 - i] = arr[i];
         arr[i] = tmp;
@@ -323,14 +327,14 @@ _.union = (...args) => {
         return [];
     }
     return args.reduce((pre, cur) => {
-        if(!_.isArray(pre)){
+        if (!_.isArray(pre)) {
             throw new TypeError(pre + ' is not Array');
         }
-        if(!_.isArray(cur)){
+        if (!_.isArray(cur)) {
             throw new TypeError(cur + ' is not Array');
         }
         cur.forEach(c => {
-            if(pre.indexOf(c) === -1){
+            if (pre.indexOf(c) === -1) {
                 pre.push(c);
             }
         });
@@ -344,7 +348,7 @@ _.uniq = (arr) => {
     }
     let newArr = [];
     arr.forEach(a => {
-        if(newArr.indexOf(a) === -1){
+        if (newArr.indexOf(a) === -1) {
             newArr.push(a);
         }
     });
@@ -361,13 +365,11 @@ _.zip = (...args) => {
             throw new TypeError(f + ' is not Array');
         }
         f.forEach((s, j) => {
-            if(!newArr[j]){
-               newArr[j] = [];
-             }
+            if (!newArr[j]) {
+                newArr[j] = [];
+            }
             newArr[j][i] = s;
         })
     });
     return newArr;
 };
-
-
